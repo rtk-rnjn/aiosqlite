@@ -35,10 +35,7 @@ LOG = logging.getLogger("aiosqlite")
 
 
 def get_loop(future: asyncio.Future) -> asyncio.AbstractEventLoop:
-    if sys.version_info >= (3, 7):
-        return future.get_loop()
-    else:
-        return future._loop
+    return future.get_loop() if sys.version_info >= (3, 7) else future._loop
 
 
 class Connection(Thread):
@@ -246,10 +243,9 @@ class Connection(Thread):
         else:
             if deterministic:
                 warnings.warn(
-                    "Deterministic function support is only available on "
-                    'Python 3.8+. Function "{}" will be registered as '
-                    "non-deterministic as per SQLite defaults.".format(name)
+                    f'Deterministic function support is only available on Python 3.8+. Function "{name}" will be registered as non-deterministic as per SQLite defaults.'
                 )
+
 
             await self._execute(self._conn.create_function, name, num_params, func)
 
